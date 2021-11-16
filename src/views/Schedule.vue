@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div>Schedule</div>
 </template>
 
 <script>

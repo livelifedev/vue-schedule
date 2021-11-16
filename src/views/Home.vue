@@ -9,7 +9,7 @@
 <script>
 export default {
   name: 'Home',
-  props: {},
+
   data() {
     return {
       data: [],
