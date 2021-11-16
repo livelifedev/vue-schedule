@@ -1,9 +1,13 @@
 <template>
-  <ul>
-    <li v-for="(coach, index) in coaches" :key="index">
-      <router-link to="/schedule">{{ coach }}</router-link>
-    </li>
-  </ul>
+  <div>
+    <ul>
+      <li v-for="(coach, index) in coaches" :key="index">
+        <router-link :to="`/schedule/${coach}`">
+          {{ coach }}
+        </router-link>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
