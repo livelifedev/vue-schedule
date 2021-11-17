@@ -1,12 +1,16 @@
 <template>
   <div>
     <router-link to="/">Home</router-link>
+
     <h1>{{ $route.params.id }}</h1>
-    <div v-for="(slots, name) in timeslots" :key="name">
-      <h3>{{ name }}</h3>
-      <ol>
-        <li v-for="time in slots" :key="time">{{ time }}</li>
-      </ol>
+
+    <div class="timetable">
+      <section v-for="(day, name) in timeslots" :key="name">
+        <h3>{{ name }}</h3>
+        <ol>
+          <li v-for="time in day" :key="time">{{ time }}</li>
+        </ol>
+      </section>
     </div>
   </div>
 </template>
@@ -22,9 +26,16 @@ export default {
   },
   computed: {
     timeslots() {
-      const availabilityMap = {};
+      const availabilityMap = {
+        Sunday: [],
+        Monday: [],
+        Tuesday: [],
+        Wednesday: [],
+        Thursday: [],
+        Friday: [],
+        Saturday: [],
+      };
 
-      // Does not account for duplicates and gaps in time
       this.data.forEach((details) => {
         if (details.name.includes(this.$route.params.id)) {
           availabilityMap[details.day_of_week] = this.generateSlots(
@@ -55,7 +66,7 @@ export default {
       timeAsNumber = parseInt(hourMins[0]);
 
       // Adjust for afternoon/night
-      if (time.includes('PM')) {
+      if (time.includes('PM') && timeAsNumber != 12) {
         timeAsNumber += 12;
       }
 
@@ -78,7 +89,7 @@ export default {
       let start = this.convertTimeToNumber(startTime);
       let end = this.convertTimeToNumber(endTime);
 
-      while (start < end) {
+      while (start <= end) {
         timeslots.push(start);
         start += 0.5;
       }
@@ -89,4 +100,18 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.timetable ol {
+  list-style: none;
+  padding: 0;
+}
+
+.timetable li {
+  padding: 1rem 0.5rem;
+}
+
+.timetable {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+</style>
