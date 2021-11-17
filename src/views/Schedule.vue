@@ -82,6 +82,8 @@ export default {
   },
 
   methods: {
+    // Convert time string (9:30am) to number format (9.5)
+    // This will be used to generate timeslots between 2 numbers (times)
     convertTimeToNumber(time) {
       const hourMins = time.split(':');
       let timeAsNumber;
@@ -101,6 +103,8 @@ export default {
       return timeAsNumber;
     },
 
+    // Convert number format (9.5) back to time string (9:30am)
+    // This is the format that is stored and displayed
     convertNumberToTime(number) {
       let time;
       time = number.toString();
@@ -112,6 +116,8 @@ export default {
       return time + ':00';
     },
 
+    // Generate timeslots between a start time and end time
+    // Will be in 30 minute (0.5) slots
     generateSlots(startTime, endTime) {
       const timeslots = [];
       let start = this.convertTimeToNumber(startTime);
