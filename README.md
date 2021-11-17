@@ -1,5 +1,8 @@
 # vue-schedule
 
+Deployed:
+https://vue-coach-scheduler.vercel.app/
+
 ## Project setup
 
 ```
