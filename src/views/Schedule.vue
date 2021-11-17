@@ -2,13 +2,17 @@
   <div>
     <router-link to="/">Home</router-link>
 
-    <h1>{{ $route.params.id }}</h1>
+    <h1>{{ selectedCoach }}</h1>
+    <h2>Book a Session</h2>
+    <p>({{ timezone }} Local Time)</p>
 
     <div class="timetable">
       <section v-for="(day, name) in timeslots" :key="name">
         <h3>{{ name }}</h3>
         <ol>
-          <li v-for="time in day" :key="time">{{ time }}</li>
+          <li v-for="time in day" :key="time">
+            <button @click="setBooking(time)">{{ time }}</button>
+          </li>
         </ol>
       </section>
     </div>
@@ -25,6 +29,10 @@ export default {
     };
   },
   computed: {
+    selectedCoach() {
+      return this.$route.params.id;
+    },
+
     timeslots() {
       const availabilityMap = {
         Sunday: [],
@@ -37,7 +45,7 @@ export default {
       };
 
       this.data.forEach((details) => {
-        if (details.name.includes(this.$route.params.id)) {
+        if (details.name === this.selectedCoach) {
           availabilityMap[details.day_of_week] = this.generateSlots(
             details.available_at,
             details.available_until
@@ -47,6 +55,15 @@ export default {
 
       return availabilityMap;
     },
+
+    timezone() {
+      const coach = this.data.find(
+        (details) => details.name === this.selectedCoach
+      );
+      return coach && coach.timezone;
+    },
+
+    // isActive() {},
   },
 
   async created() {
@@ -61,7 +78,6 @@ export default {
     convertTimeToNumber(time) {
       const hourMins = time.split(':');
       let timeAsNumber;
-
       // Set initially with the hour value
       timeAsNumber = parseInt(hourMins[0]);
 
@@ -78,10 +94,15 @@ export default {
       return timeAsNumber;
     },
 
-    getDifference(startTime, endTime) {
-      return (
-        this.convertTimeToNumber(endTime) - this.convertTimeToNumber(startTime)
-      );
+    convertNumberToTime(number) {
+      let time;
+      time = number.toString();
+
+      // Convert half hour decimal to minutes
+      if (time.includes('.5')) {
+        return time.split('.')[0] + ':30';
+      }
+      return time + ':00';
     },
 
     generateSlots(startTime, endTime) {
@@ -90,11 +111,21 @@ export default {
       let end = this.convertTimeToNumber(endTime);
 
       while (start <= end) {
-        timeslots.push(start);
+        const time = this.convertNumberToTime(start);
+        timeslots.push(time);
         start += 0.5;
       }
 
       return timeslots;
+    },
+
+    setBooking(time) {
+      const booking = {
+        name: this.selectedCoach,
+        time,
+      };
+      console.log('set', booking);
+      // localStorage.
     },
   },
 };
@@ -107,11 +138,21 @@ export default {
 }
 
 .timetable li {
-  padding: 1rem 0.5rem;
+  padding: 0.5rem;
+}
+
+.timetable button {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: none;
 }
 
 .timetable {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
+}
+
+.active {
+  background-color: turquoise;
 }
 </style>
