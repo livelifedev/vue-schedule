@@ -109,7 +109,6 @@ export default {
       let time;
       time = number.toString();
 
-      // Convert half hour decimal to minutes
       if (time.includes('.5')) {
         return time.split('.')[0] + ':30';
       }
