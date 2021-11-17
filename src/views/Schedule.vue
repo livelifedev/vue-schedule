@@ -1,5 +1,7 @@
 <template>
   <div>
+    <div v-show="hasBooked" class="banner">Session booked!</div>
+
     <router-link to="/">Home</router-link>
 
     <h1>{{ selectedCoach }}</h1>
@@ -7,11 +9,16 @@
     <p>({{ timezone }} Local Time)</p>
 
     <div class="timetable">
-      <section v-for="(day, name) in timeslots" :key="name">
-        <h3>{{ name }}</h3>
+      <section v-for="(day, dayKey) in timeslots" :key="dayKey">
+        <h3>{{ dayKey }}</h3>
         <ol>
           <li v-for="time in day" :key="time">
-            <button @click="setBooking(time)">{{ time }}</button>
+            <button
+              :class="{ active: checkIfBooked(time, dayKey) }"
+              @click="setBooking(time, dayKey)"
+            >
+              {{ time }}
+            </button>
           </li>
         </ol>
       </section>
@@ -26,6 +33,8 @@ export default {
   data() {
     return {
       data: [],
+
+      hasBooked: false,
     };
   },
   computed: {
@@ -62,8 +71,6 @@ export default {
       );
       return coach && coach.timezone;
     },
-
-    // isActive() {},
   },
 
   async created() {
@@ -119,13 +126,34 @@ export default {
       return timeslots;
     },
 
-    setBooking(time) {
+    setBooking(time, day) {
+      this.hasBooked = false;
+
       const booking = {
         name: this.selectedCoach,
         time,
+        day,
       };
-      console.log('set', booking);
-      // localStorage.
+      localStorage.setItem('booking', JSON.stringify(booking));
+
+      this.hasBooked = true;
+    },
+
+    getBooking() {
+      return JSON.parse(localStorage.getItem('booking'));
+    },
+
+    checkIfBooked(time, day) {
+      const booking = this.getBooking();
+
+      if (booking) {
+        return (
+          this.selectedCoach === booking.name &&
+          time === booking.time &&
+          day === booking.day
+        );
+      }
+      return false;
     },
   },
 };
@@ -154,5 +182,14 @@ export default {
 
 .active {
   background-color: turquoise;
+}
+
+.banner {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  padding: 1rem;
+  background: turquoise;
+  font-weight: bold;
 }
 </style>
