@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div class="coaches">
+    <h1>Available Coaches</h1>
     <ul>
       <li v-for="(coach, index) in coaches" :key="index">
         <router-link :to="`/schedule/${coach}`">
@@ -37,9 +38,16 @@ export default {
 
     this.data = await res.json();
   },
-
-  methods: {},
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.coaches ul {
+  list-style: none;
+  padding: 0;
+}
+
+.coaches li {
+  padding: 0.5rem;
+}
+</style>
